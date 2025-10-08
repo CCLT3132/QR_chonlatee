@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สร้าง QR Code พนักงาน</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h2 {
+      color: #667eea;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      border-left: 4px solid #2196f3;
+    }
+    .info-box h3 {
+      color: #1976d2;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .info-box p {
+      color: #555;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .info-box code {
+      background: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #d32f2f;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    .required {
+      color: #f44336;
+    }
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    small {
+      display: block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 12px;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #qrSection {
+      margin-top: 30px;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      text-align: center;
+      display: none;
+    }
+    #qrSection.show {
+      display: block;
+    }
+    #qrcode {
+      display: inline-block;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .qr-info {
+      color: #28a745;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    .download-btn {
+      margin-top: 15px;
+      padding: 12px 30px;
+      background: #28a745;
+      width: auto;
+      display: inline-block;
+    }
+    .download-btn:hover {
+      background: #218838;
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    }
+    
+    .message {
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .test-url {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border-radius: 10px;
+      border: 1px solid #ffc107;
+    }
+    .test-url h4 {
+      color: #856404;
+      margin-bottom: 10px;
+    }
+    .test-url a {
+      color: #0066cc;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📱 สร้าง QR Code พนักงาน</h2>
+    <p class="subtitle">ระบบสร้าง QR Code แบบ URL - แสดงข้อมูลสวยงามบนหน้าเว็บ</p>
+    
+    <div class="info-box">
+      <h3>📌 วิธีใช้งาน (สำคัญ!)</h3>
+      <p>
+        <strong>ขั้นตอนที่ 1:</strong> อัปโหลดไฟล์ <code>employee_qr.html</code> ขึ้น GitHub Pages<br>
+        <strong>ขั้นตอนที่ 2:</strong> คัดลอก URL ที่ได้มาใส่ในช่อง "URL ของเว็บโฮสติ้ง"<br>
+        <strong>ตัวอย่าง URL:</strong> <code>https://yourusername.github.io/your-repo/employee_qr.html</code>
+      </p>
+    </div>
+
+    <div class="form-group">
+      <label>URL ของเว็บโฮสติ้ง <span class="required">*</span></label>
+      <input type="url" id="hosting_url" placeholder="https://yourusername.github.io/your-repo/employee_qr.html">
+      <small>⚠️ ใส่ URL ของไฟล์ employee_qr.html ที่อัปโหลดแล้ว</small>
+    </div>
+
+    <div class="form-group">
+      <label>รหัสพนักงาน <span class="required">*</span></label>
+      <input type="text" id="emp_id" placeholder="EMP001">
+    </div>
+
+    <div class="form-group">
+      <label>ชื่อ-นามสกุล <span class="required">*</span></label>
+      <input type="text" id="fullname" placeholder="สมชาย ใจดี">
+    </div>
+
+    <div class="form-group">
+      <label>ชื่อเล่น</label>
+      <input type="text" id="nickname" placeholder="ชาย">
+    </div>
+
+    <div class="form-group">
+      <label>วันที่เข้างาน</label>
+      <input type="date" id="startdate">
+    </div>
+
+    <div class="form-group">
+      <label>ตำแหน่งงาน</label>
+      <input type="text" id="position" placeholder="พนักงานขาย">
+    </div>
+
+    <div class="form-group">
+      <label>แผนก</label>
+      <input type="text" id="department" placeholder="ฝ่ายขาย">
+    </div>
+
+    <div class="form-group">
+      <label>เบอร์โทรศัพท์</label>
+      <input type="tel" id="phone" placeholder="081-234-5678">
+    </div>
+
+    <div class="form-group">
+      <label>อีเมล</label>
+      <input type="email" id="email" placeholder="example@company.com">
+    </div>
+
+    <div class="form-group">
+      <label>LINE ID</label>
+      <input type="text" id="lineid" placeholder="@username">
+    </div>
+
+    <div class="form-group">
+      <label>URL รูปภาพ</label>
+      <input type="url" id="photo_url" placeholder="https://i.imgur.com/example.jpg">
+      <small>💡 ใช้ลิงก์รูปจาก Imgur, Google Drive (direct link), หรืออัปโหลดไว้ใน GitHub</small>
+    </div>
+
+    <button onclick="generateQR()">🎯 สร้าง QR Code</button>
+    
+    <div id="message"></div>
+    
+    <div id="qrSection">
+      <div id="qrcode"></div>
+      <div class="qr-info">✅ สร้าง QR Code สำเร็จ!</div>
+      <button class="download-btn" onclick="downloadQR()">💾 ดาวน์โหลด QR Code</button>
+      
+      <div class="test-url">
+        <h4>🔗 ทดสอบลิงก์ก่อนสร้าง QR:</h4>
+        <a id="testLink" href="#" target="_blank">คลิกเพื่อทดสอบเปิดหน้าเว็บ</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentCanvas = null;
+
+    function generateQR() {
+      const hostingUrl = document.getElementById("hosting_url").value.trim();
+      const empId = document.getElementById("emp_id").value.trim();
+      const fullname = document.getElementById("fullname").value.trim();
+      const nickname = document.getElementById("nickname").value.trim();
+      const startdate = document.getElementById("startdate").value;
+      const position = document.getElementById("position").value.trim();
+      const department = document.getElementById("department").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const lineid = document.getElementById("lineid").value.trim();
+      const photoUrl = document.getElementById("photo_url").value.trim();
+
+      if (!hostingUrl) {
+        showMessage("กรุณากรอก URL ของเว็บโฮสติ้ง", "error");
+        return;
+      }
+
+      if (!empId || !fullname) {
+        showMessage("กรุณากรอกรหัสพนักงานและชื่อ-นามสกุล", "error");
+        return;
+      }
+
+      // สร้างข้อมูลแบบย่อ
+      const data = {
+        i: empId,
+        n: fullname,
+        nn: nickname,
+        d: startdate,
+        p: position,
+        dp: department,
+        ph: phone,
+        e: email,
+        l: lineid,
+        img: convertDriveLink(photoUrl)
+      };
+
+      // เข้ารหัสข้อมูล
+      const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+      const qrUrl = `${hostingUrl}#${encoded}`;
+
+      // แสดงลิงก์ทดสอบ
+      document.getElementById("testLink").href = qrUrl;
+      document.getElementById("testLink").textContent = qrUrl;
+
+      // สร้าง QR Code
+      const qrcodeDiv = document.getElementById("qrcode");
+      qrcodeDiv.innerHTML = "";
+      
+      try {
+        new QRCode(qrcodeDiv, {
+          text: qrUrl,
+          width: 300,
+          height: 300,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        
+        document.getElementById("qrSection").classList.add("show");
+        showMessage("QR Code สร้างเสร็จแล้ว! ลองสแกนหรือคลิกลิงก์ด้านล่างเพื่อทดสอบ", "success");
+        
+        setTimeout(() => {
+          currentCanvas = qrcodeDiv.querySelector('canvas');
+        }, 100);
+        
+      } catch (e) {
+        showMessage("เกิดข้อผิดพลาด: " + e.message, "error");
+      }
+    }
+
+    function downloadQR() {
+      if (currentCanvas) {
+        const empId = document.getElementById("emp_id").value.trim();
+        const link = document.createElement('a');
+        link.download = `QR_${empId || 'employee'}.png`;
+        link.href = currentCanvas.toDataURL();
+        link.click();
+      }
+    }
+
+    function showMessage(text, type) {
+      const msgDiv = document.getElementById("message");
+      msgDiv.className = `message ${type}`;
+      msgDiv.textContent = text;
+      setTimeout(() => {
+        msgDiv.className = 'message';
+        msgDiv.textContent = '';
+      }, 5000);
+    }
+
+    function convertDriveLink(url) {
+      if (!url) return '';
+      // แปลง Google Drive link เป็น direct link
+      const match = url.match(/[-\w]{25,}/);
+      if (match) {
+        return `https://drive.google.com/uc?id=${match[0]}`;
+      }
+      return url;
+    }
+  </script>
+</body>
+</html>
