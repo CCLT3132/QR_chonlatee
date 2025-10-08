@@ -185,19 +185,44 @@
   </div>
 
   <script>
+    function convertGoogleDriveLink(url) {
+      if (!url) return '';
+      
+      // ตรวจสอบว่าเป็นลิงก์ Google Drive หรือไม่
+      if (url.includes('drive.google.com')) {
+        // แบบที่ 1: https://drive.google.com/file/d/FILE_ID/view
+        let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+        }
+        
+        // แบบที่ 2: https://drive.google.com/open?id=FILE_ID
+        match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+        }
+        
+        // แบบที่ 3: มีแต่ FILE_ID
+        match = url.match(/([a-zA-Z0-9_-]{25,})/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w400`;
+        }
+      }
+      
+      // ถ้าไม่ใช่ Google Drive ให้ใช้ URL เดิม
+      return url;
+    }
+
     function loadEmployeeData() {
       try {
-        // อ่านข้อมูลจาก URL hash
         const hash = window.location.hash.substring(1);
         if (!hash) {
           throw new Error('No data found');
         }
 
-        // ถอดรหัสข้อมูล
         const jsonStr = decodeURIComponent(atob(hash));
         const data = JSON.parse(jsonStr);
 
-        // สร้าง HTML
         displayEmployee(data);
       } catch (e) {
         console.error('Error loading data:', e);
@@ -207,10 +232,13 @@
     function displayEmployee(data) {
       const card = document.getElementById('employeeCard');
       
+      // แปลงลิงก์รูปภาพ Google Drive
+      const imageUrl = convertGoogleDriveLink(data.img);
+      
       // สร้าง HTML สำหรับรูปภาพ
       let photoHTML = '<div class="photo-placeholder">👤</div>';
-      if (data.img) {
-        photoHTML = `<img src="${data.img}" alt="รูปภาพ" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'>👤</div>'">`;
+      if (imageUrl) {
+        photoHTML = `<img src="${imageUrl}" alt="รูปภาพ" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'>👤</div>'">`;
       }
 
       // สร้าง HTML สำหรับข้อมูลพื้นฐาน
@@ -346,7 +374,6 @@
       }
     }
 
-    // โหลดข้อมูลเมื่อเปิดหน้า
     window.addEventListener('load', loadEmployeeData);
     window.addEventListener('hashchange', loadEmployeeData);
   </script>
