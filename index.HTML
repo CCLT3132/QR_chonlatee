@@ -63,6 +63,26 @@
       color: #d32f2f;
     }
     
+    .warning-box {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #ffc107;
+    }
+    .warning-box h4 {
+      color: #856404;
+      margin-bottom: 8px;
+    }
+    .warning-box ul {
+      margin-left: 20px;
+      color: #856404;
+      font-size: 13px;
+    }
+    .warning-box li {
+      margin-bottom: 5px;
+    }
+    
     .form-group {
       margin-bottom: 20px;
     }
@@ -201,6 +221,18 @@
       </p>
     </div>
 
+    <div class="warning-box">
+      <h4>🖼️ วิธีใส่รูปภาพจาก Google Drive</h4>
+      <ul>
+        <li><strong>ขั้นที่ 1:</strong> เปิดไฟล์รูปใน Google Drive</li>
+        <li><strong>ขั้นที่ 2:</strong> คลิกขวา → เลือก "แชร์"</li>
+        <li><strong>ขั้นที่ 3:</strong> เปลี่ยนเป็น "ทุกคนที่มีลิงก์สามารถดูได้"</li>
+        <li><strong>ขั้นที่ 4:</strong> คลิก "คัดลอกลิงก์"</li>
+        <li><strong>ขั้นที่ 5:</strong> วางลิงก์ในช่อง "URL รูปภาพ" ด้านล่าง</li>
+      </ul>
+      <p style="margin-top:10px"><strong>💡 ทางเลือกอื่น:</strong> Imgur, GitHub, หรือ Direct Image URL</p>
+    </div>
+
     <div class="form-group">
       <label>URL ของเว็บโฮสติ้ง <span class="required">*</span></label>
       <input type="url" id="hosting_url" placeholder="https://yourusername.github.io/your-repo/employee_qr.html">
@@ -253,9 +285,9 @@
     </div>
 
     <div class="form-group">
-      <label>URL รูปภาพ</label>
-      <input type="url" id="photo_url" placeholder="https://i.imgur.com/example.jpg">
-      <small>💡 ใช้ลิงก์รูปจาก Imgur, Google Drive (direct link), หรืออัปโหลดไว้ใน GitHub</small>
+      <label>URL รูปภาพ (Google Drive / Imgur / Direct Link)</label>
+      <input type="url" id="photo_url" placeholder="https://drive.google.com/file/d/... หรือ https://i.imgur.com/...">
+      <small>💡 รองรับ: Google Drive (แชร์เป็นสาธารณะ), Imgur, หรือ Direct Image URL</small>
     </div>
 
     <button onclick="generateQR()">🎯 สร้าง QR Code</button>
@@ -276,6 +308,34 @@
 
   <script>
     let currentCanvas = null;
+
+    function convertGoogleDriveLink(url) {
+      if (!url) return '';
+      
+      // ตรวจสอบว่าเป็นลิงก์ Google Drive หรือไม่
+      if (url.includes('drive.google.com')) {
+        // แบบที่ 1: https://drive.google.com/file/d/FILE_ID/view
+        let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+        }
+        
+        // แบบที่ 2: https://drive.google.com/open?id=FILE_ID
+        match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+        }
+        
+        // แบบที่ 3: มีแต่ FILE_ID
+        match = url.match(/([a-zA-Z0-9_-]{25,})/);
+        if (match) {
+          return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w200`;
+        }
+      }
+      
+      // ถ้าไม่ใช่ Google Drive ให้ใช้ URL เดิม
+      return url;
+    }
 
     function generateQR() {
       const hostingUrl = document.getElementById("hosting_url").value.trim();
@@ -300,6 +360,9 @@
         return;
       }
 
+      // แปลงลิงก์รูปภาพ Google Drive
+      const convertedPhotoUrl = convertGoogleDriveLink(photoUrl);
+
       // สร้างข้อมูลแบบย่อ
       const data = {
         i: empId,
@@ -311,7 +374,7 @@
         ph: phone,
         e: email,
         l: lineid,
-        img: convertDriveLink(photoUrl)
+        img: convertedPhotoUrl
       };
 
       // เข้ารหัสข้อมูล
@@ -333,7 +396,7 @@
           height: 300,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M
+          correctLevel: QRCode.CorrectLevel.L
         });
         
         document.getElementById("qrSection").classList.add("show");
@@ -366,16 +429,6 @@
         msgDiv.className = 'message';
         msgDiv.textContent = '';
       }, 5000);
-    }
-
-    function convertDriveLink(url) {
-      if (!url) return '';
-      // แปลง Google Drive link เป็น direct link
-      const match = url.match(/[-\w]{25,}/);
-      if (match) {
-        return `https://drive.google.com/uc?id=${match[0]}`;
-      }
-      return url;
     }
   </script>
 </body>
