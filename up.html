@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>สร้าง QR Code พนักงาน - ขนาดเล็ก</title>
+  <title>สร้าง QR Code พนักงาน - Ultra Minimal</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     * {
@@ -64,25 +64,25 @@
     }
     
     .warning-box {
-      background: #fff3cd;
+      background: #e8f5e9;
       padding: 15px;
       border-radius: 10px;
       margin-bottom: 20px;
-      border-left: 4px solid #ffc107;
+      border-left: 4px solid #4caf50;
     }
     .warning-box h4 {
-      color: #856404;
+      color: #2e7d32;
       margin-bottom: 8px;
     }
     .warning-box p {
-      color: #856404;
+      color: #2e7d32;
       font-size: 13px;
       line-height: 1.6;
       margin-bottom: 8px;
     }
     .warning-box ul {
       margin-left: 20px;
-      color: #856404;
+      color: #2e7d32;
       font-size: 13px;
     }
     .warning-box li {
@@ -278,71 +278,65 @@
 <body>
   <div class="container">
     <h2>📱 สร้าง QR Code พนักงาน</h2>
-    <p class="subtitle">ระบบสร้าง QR Code ขนาดเล็ก - Error Level L (7%)</p>
+    <p class="subtitle">ระบบสร้าง QR Code ขนาดเล็กสุด - Error Level L (7%)</p>
     
     <div class="info-box">
       <h3>📌 วิธีใช้งาน</h3>
       <p>
         <strong>ขั้นตอนที่ 1:</strong> อัปโหลดไฟล์ <code>employee_qr.html</code> ขึ้น GitHub Pages<br>
-        <strong>ขั้นตอนที่ 2:</strong> คัดลอก URL มาใส่ในช่องด้านล่าง<br>
-        <strong>ตัวอย่าง:</strong> <code>https://user.github.io/repo/employee_qr.html</code>
+        <strong>ขั้นตอนที่ 2:</strong> คัดลอก URL มาใส่ในช่องด้านล่าง (แนะนำใช้ bit.ly ย่อ URL)<br>
+        <strong>ตัวอย่าง:</strong> <code>https://bit.ly/emp-qr</code>
       </p>
     </div>
 
     <div class="warning-box">
-      <h4>⚡ การลดความซับซ้อน QR Code</h4>
-      <p><strong>✅ ทำแล้ว:</strong></p>
+      <h4>⚡ ออกแบบให้ QR Code เล็กสุด</h4>
+      <p><strong>✅ ปรับแต่งแล้ว:</strong></p>
       <ul>
-        <li>ใช้ชื่อฟิลด์ 1 ตัวอักษร (i,n,k,p,t,h,l,g)</li>
-        <li>ตัดฟิลด์วันที่และอีเมลออก (ลดขนาด ~20%)</li>
-        <li>ลบฟิลด์ว่างอัตโนมัติ</li>
-        <li>บีบอัด base64 URL-safe</li>
-        <li>ลบ padding (=) ออก</li>
-        <li>เพิ่มขอบ QR Code (margin: 2)</li>
+        <li>ใช้ชื่อฟิลด์ 1 ตัวอักษร (i, n, k, t, p, l, g)</li>
+        <li>ตั้ง LINE ID เป็น @chonlatee ตายตัว</li>
+        <li>เบอร์โทรเป็นตัวเลขอย่างเดียว (ไม่มีขีด)</li>
+        <li>ฟิลด์ว่างจะถูกลบอัตโนมัติ (ลดขนาด)</li>
+        <li>บีบอัด base64 URL-safe + ลบ padding</li>
         <li>Error Level: L (7% - ต่ำสุด)</li>
       </ul>
-      <p style="margin-top:10px"><strong>💡 เพิ่มเติม:</strong> URL รูปภาพควรสั้น ≤ 40 ตัวอักษร (ใช้ bit.ly)</p>
+      <p style="margin-top:10px"><strong>🎯 เป้าหมาย:</strong> URL สั้นที่สุด → QR Code ต่ำมาก 🟢</p>
     </div>
 
     <div class="form-group">
       <label>URL ของเว็บโฮสติ้ง <span class="required">*</span></label>
-      <input type="url" id="hosting_url" placeholder="https://user.github.io/repo/employee_qr.html">
-      <small>⚠️ URL ของไฟล์ employee_qr.html ที่อัปโหลดแล้ว</small>
+      <input type="url" id="hosting_url" placeholder="https://bit.ly/emp-qr">
+      <small>💡 แนะนำ: ใช้ bit.ly ย่อ URL ให้สั้นที่สุด</small>
     </div>
 
     <div class="form-group">
-      <label>รหัสพนักงาน <span class="required">*</span></label>
-      <input type="text" id="emp_id" placeholder="EMP001" maxlength="20">
+      <label>รหัสพนักงาน</label>
+      <input type="text" id="emp_id" placeholder="123456789" maxlength="9">
+      <small>⚠️ ตัวเลข 0-9 หลัก (ไม่บังคับ)</small>
     </div>
 
     <div class="form-group">
-      <label>ชื่อ-นามสกุล <span class="required">*</span></label>
-      <input type="text" id="fullname" placeholder="สมชาย ใจดี" maxlength="50">
+      <label>ชื่อ-นามสกุล</label>
+      <input type="text" id="fullname" placeholder="สมชาย ใจดี" maxlength="40">
+      <small>⚠️ 0-40 ตัวอักษร (ไม่บังคับ)</small>
     </div>
 
     <div class="form-group">
       <label>ชื่อเล่น</label>
-      <input type="text" id="nickname" placeholder="ชาย" maxlength="20">
+      <input type="text" id="nickname" placeholder="ชาย" maxlength="15">
+      <small>⚠️ 0-15 ตัวอักษร (ไม่บังคับ)</small>
     </div>
 
     <div class="form-group">
-      <label>ตำแหน่งงาน</label>
-      <input type="text" id="position" placeholder="พนักงานขาย" maxlength="30">
-    </div>
-
-    <div class="form-group">
-      <label>แผนก</label>
-      <input type="text" id="department" placeholder="ฝ่ายขาย" maxlength="30">
+      <label>ตำแหน่ง</label>
+      <input type="text" id="position" placeholder="พนักงานขาย" maxlength="20">
+      <small>⚠️ 0-20 ตัวอักษร (ไม่บังคับ)</small>
     </div>
 
     <div class="form-group">
       <label>เบอร์โทรศัพท์</label>
-      <input type="tel" id="phone" placeholder="081-234-5678" maxlength="15">
-    </div>
-
-    <div class="form-group">
-      <label>LINE ID</label>
-      <input type="text" id="lineid" placeholder="@username" maxlength="30">
+      <input type="tel" id="phone" placeholder="0812345678" maxlength="10" pattern="[0-9]*">
+      <small>⚠️ ตัวเลข 0-10 หลัก (ไม่มีขีด, ไม่บังคับ)</small>
     </div>
 
     <div class="form-group">
@@ -350,8 +344,8 @@
         URL รูปภาพ
         <span class="char-counter" id="photoCounter">0</span>
       </label>
-      <input type="url" id="photo_url" placeholder="https://bit.ly/abc หรือ https://tinyurl.com/xyz" oninput="updatePhotoCounter()">
-      <small>💡 แนะนำ: ใช้ URL สั้นที่สุด (bit.ly ให้ ~20 ตัวอักษร)</small>
+      <input type="url" id="photo_url" placeholder="https://bit.ly/pic123" oninput="updatePhotoCounter()">
+      <small>💡 0-40 ตัวอักษร - ใช้ bit.ly ย่อให้สั้นที่สุด (ไม่บังคับ)</small>
     </div>
 
     <button onclick="generateQR()">🎯 สร้าง QR Code</button>
@@ -404,43 +398,38 @@
       if (length === 0) {
         counter.textContent = '0';
         counter.className = 'char-counter';
+      } else if (length <= 25) {
+        counter.textContent = `${length} ✓✓✓`;
+        counter.className = 'char-counter ok';
       } else if (length <= 40) {
         counter.textContent = `${length} ✓`;
         counter.className = 'char-counter ok';
-      } else if (length <= 60) {
-        counter.textContent = `${length} ⚠️`;
-        counter.className = 'char-counter warning';
       } else {
-        counter.textContent = `${length} ❌`;
-        counter.className = 'char-counter error';
+        counter.textContent = `${length} ⚠️ เกิน`;
+        counter.className = 'char-counter warning';
       }
     }
 
     function convertGoogleDriveLink(url) {
       if (!url) return '';
       
-      // ตรวจสอบว่าเป็นลิงก์ Google Drive หรือไม่
       if (url.includes('drive.google.com')) {
-        // แบบที่ 1: https://drive.google.com/file/d/FILE_ID/view
         let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
         }
         
-        // แบบที่ 2: https://drive.google.com/open?id=FILE_ID
         match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
         }
         
-        // แบบที่ 3: มีแต่ FILE_ID
         match = url.match(/([a-zA-Z0-9_-]{25,})/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w200`;
         }
       }
       
-      // ถ้าไม่ใช่ Google Drive ให้ใช้ URL เดิม
       return url;
     }
 
@@ -450,40 +439,66 @@
       const fullname = document.getElementById("fullname").value.trim();
       const nickname = document.getElementById("nickname").value.trim();
       const position = document.getElementById("position").value.trim();
-      const department = document.getElementById("department").value.trim();
       const phone = document.getElementById("phone").value.trim();
-      const lineid = document.getElementById("lineid").value.trim();
       const photoUrl = document.getElementById("photo_url").value.trim();
 
+      // ตรวจสอบเฉพาะ URL โฮสติ้ง (บังคับ)
       if (!hostingUrl) {
         showMessage("กรุณากรอก URL ของเว็บโฮสติ้ง", "error");
         return;
       }
 
-      if (!empId || !fullname) {
-        showMessage("กรุณากรอกรหัสพนักงานและชื่อ-นามสกุล", "error");
+      // ตรวจสอบรหัสพนักงาน (ถ้ากรอก)
+      if (empId && (empId.length > 9 || !/^\d+$/.test(empId))) {
+        showMessage("รหัสพนักงานต้องเป็นตัวเลข 0-9 หลักเท่านั้น", "error");
         return;
       }
 
-      // แปลงลิงก์รูปภาพ Google Drive
-      const convertedPhotoUrl = convertGoogleDriveLink(photoUrl);
+      // ตรวจสอบชื่อ-นามสกุล (ถ้ากรอก)
+      if (fullname && fullname.length > 40) {
+        showMessage("ชื่อ-นามสกุลต้องไม่เกิน 40 ตัวอักษร", "error");
+        return;
+      }
 
-      // สร้างข้อมูลแบบย่อสุดๆ (ใช้ชื่อฟิลด์ 1 ตัวอักษร) - เรียงตามความสำคัญ
+      // ตรวจสอบชื่อเล่น (ถ้ากรอก)
+      if (nickname && nickname.length > 15) {
+        showMessage("ชื่อเล่นต้องไม่เกิน 15 ตัวอักษร", "error");
+        return;
+      }
+
+      // ตรวจสอบตำแหน่ง (ถ้ากรอก)
+      if (position && position.length > 20) {
+        showMessage("ตำแหน่งต้องไม่เกิน 20 ตัวอักษร", "error");
+        return;
+      }
+
+      // ตรวจสอบเบอร์โทร (ถ้ากรอก)
+      if (phone && (phone.length > 10 || !/^\d+$/.test(phone))) {
+        showMessage("เบอร์โทรศัพท์ต้องเป็นตัวเลข 0-10 หลักเท่านั้น", "error");
+        return;
+      }
+
+      // ตรวจสอบ URL รูปภาพ (ถ้ากรอก)
+      if (photoUrl && photoUrl.length > 40) {
+        showMessage("URL รูปภาพต้องไม่เกิน 40 ตัวอักษร (ใช้ bit.ly ย่อ URL)", "error");
+        return;
+      }
+
+      // แปลงลิงก์รูปภาพ Google Drive (ถ้าเป็น)
+      const convertedPhotoUrl = photoUrl ? convertGoogleDriveLink(photoUrl) : '';
+
+      // สร้างข้อมูลแบบสั้นสุด (เฉพาะฟิลด์ที่มีค่า)
       const data = {};
       
-      // ข้อมูลบังคับ
       if (empId) data.i = empId;
       if (fullname) data.n = fullname;
-      
-      // ข้อมูลเสริม (เรียงตามความสำคัญ)
       if (nickname) data.k = nickname;
-      if (position) data.p = position;
-      if (department) data.t = department;
-      if (phone) data.h = phone;
-      if (lineid) data.l = lineid;
+      if (position) data.t = position;
+      if (phone) data.p = phone;
+      data.l = "@chonlatee"; // ตายตัวเสมอ
       if (convertedPhotoUrl) data.g = convertedPhotoUrl;
 
-      // เข้ารหัสข้อมูลแบบประหยัดที่สุด (ใช้ JSON สั้นที่สุด)
+      // เข้ารหัสข้อมูลแบบประหยัดที่สุด
       const jsonData = JSON.stringify(data);
       
       // ใช้ base64 แล้วลบ padding และ URL-unsafe chars
@@ -501,17 +516,20 @@
       // คำนวณความซับซ้อน (0-100%)
       let complexity = 0;
       let complexityText = '';
-      if (urlSize <= 120) {
+      if (urlSize <= 80) {
+        complexity = 12;
+        complexityText = 'ต่ำมาก 🟢🟢🟢';
+      } else if (urlSize <= 120) {
         complexity = 20;
-        complexityText = 'ต่ำมาก 🟢';
-      } else if (urlSize <= 200) {
+        complexityText = 'ต่ำมาก 🟢🟢';
+      } else if (urlSize <= 180) {
         complexity = 35;
         complexityText = 'ต่ำ 🟢';
-      } else if (urlSize <= 300) {
-        complexity = 55;
+      } else if (urlSize <= 250) {
+        complexity = 50;
         complexityText = 'ปานกลาง 🟡';
-      } else if (urlSize <= 400) {
-        complexity = 75;
+      } else if (urlSize <= 350) {
+        complexity = 70;
         complexityText = 'สูง 🟠';
       } else {
         complexity = 100;
@@ -540,8 +558,8 @@
           colorDark: "#000000",
           colorLight: "#ffffff",
           correctLevel: QRCode.CorrectLevel.L,  // Error Level L (7%)
-          quietZone: 2,           // เพิ่มขอบ 2 หน่วย
-          quietZoneColor: "#ffffff"  // สีขอบขาว
+          quietZone: 2,
+          quietZoneColor: "#ffffff"
         });
         
         document.getElementById("qrSection").classList.add("show");

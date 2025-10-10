@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ข้อมูลพนักงาน</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 25px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+    
+    .photo-container {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .photo-placeholder {
+      font-size: 60px;
+      color: rgba(255,255,255,0.8);
+    }
+    
+    .card-header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .card-header .nickname {
+      font-size: 18px;
+      opacity: 0.9;
+      font-weight: normal;
+    }
+    
+    .card-body {
+      padding: 30px;
+    }
+    
+    .info-group {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    
+    .info-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .info-value {
+      font-size: 18px;
+      color: #333;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-icon {
+      font-size: 20px;
+      width: 30px;
+      text-align: center;
+    }
+    
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-call {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .btn-line {
+      background: #06c755;
+      color: white;
+    }
+    
+    .error-container {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .error-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    
+    .error-title {
+      color: #667eea;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .error-message {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: #667eea;
+      font-size: 18px;
+    }
+    
+    @media (max-width: 480px) {
+      .card {
+        border-radius: 20px;
+      }
+      
+      .card-header h1 {
+        font-size: 24px;
+      }
+      
+      .photo-container {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .info-value {
+        font-size: 16px;
+      }
+      
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="content">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">กำลังโหลดข้อมูล...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function decodeData() {
+      try {
+        // อ่านข้อมูลจาก URL hash
+        const hash = window.location.hash.substring(1);
+        
+        if (!hash) {
+          throw new Error('ไม่พบข้อมูล');
+        }
+
+        // แปลง URL-safe base64 กลับเป็น base64 ปกติ
+        let base64 = hash
+          .replace(/-/g, '+')
+          .replace(/_/g, '/');
+        
+        // เติม padding กลับ
+        while (base64.length % 4) {
+          base64 += '=';
+        }
+
+        // ถอดรหัส base64
+        const jsonData = decodeURIComponent(escape(atob(base64)));
+        
+        // แปลง JSON เป็น object
+        const data = JSON.parse(jsonData);
+        
+        return data;
+      } catch (error) {
+        console.error('Error decoding data:', error);
+        return null;
+      }
+    }
+
+    function displayEmployee(data) {
+      if (!data) {
+        showError('ไม่สามารถอ่านข้อมูลได้', 'กรุณาสแกน QR Code อีกครั้ง');
+        return;
+      }
+
+      // สร้าง HTML สำหรับแสดงข้อมูล
+      let html = `
+        <div class="card-header">
+          <div class="photo-container">
+            ${data.g ? 
+              `<img src="${data.g}" alt="รูปภาพ" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'>👤</div>'">` : 
+              '<div class="photo-placeholder">👤</div>'
+            }
+          </div>
+          <h1>${data.n || 'ไม่ระบุชื่อ'}</h1>
+          ${data.k ? `<div class="nickname">"${data.k}"</div>` : ''}
+        </div>
+        
+        <div class="card-body">
+      `;
+
+      // แสดงรหัสพนักงาน
+      if (data.i) {
+        html += `
+          <div class="info-group">
+            <div class="info-label">รหัสพนักงาน</div>
+            <div class="info-value">
+              <span class="info-icon">🆔</span>
+              <span>${data.i}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // แสดงตำแหน่ง
+      if (data.t) {
+        html += `
+          <div class="info-group">
+            <div class="info-label">ตำแหน่ง</div>
+            <div class="info-value">
+              <span class="info-icon">💼</span>
+              <span>${data.t}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // แสดงเบอร์โทร
+      if (data.p) {
+        html += `
+          <div class="info-group">
+            <div class="info-label">เบอร์โทรศัพท์</div>
+            <div class="info-value">
+              <span class="info-icon">📱</span>
+              <span>${formatPhone(data.p)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // แสดง LINE ID
+      if (data.l) {
+        html += `
+          <div class="info-group">
+            <div class="info-label">LINE ID</div>
+            <div class="info-value">
+              <span class="info-icon">💬</span>
+              <span>${data.l}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // ปุ่มติดต่อ
+      html += '<div class="action-buttons">';
+      
+      if (data.p) {
+        html += `
+          <a href="tel:${data.p}" class="btn btn-call">
+            <span>📞</span>
+            <span>โทร</span>
+          </a>
+        `;
+      }
+      
+      if (data.l) {
+        const lineId = data.l.replace('@', '');
+        html += `
+          <a href="https://line.me/ti/p/~${lineId}" target="_blank" class="btn btn-line">
+            <span>💚</span>
+            <span>LINE</span>
+          </a>
+        `;
+      }
+      
+      html += '</div></div>';
+
+      document.getElementById('content').innerHTML = html;
+    }
+
+    function formatPhone(phone) {
+      // แปลงเบอร์โทร 0812345678 เป็น 081-234-5678
+      if (phone.length === 10) {
+        return phone.substring(0, 3) + '-' + phone.substring(3, 6) + '-' + phone.substring(6);
+      }
+      return phone;
+    }
+
+    function showError(title, message) {
+      document.getElementById('content').innerHTML = `
+        <div class="error-container">
+          <div class="error-icon">⚠️</div>
+          <div class="error-title">${title}</div>
+          <div class="error-message">${message}</div>
+        </div>
+      `;
+    }
+
+    // โหลดข้อมูลเมื่อเปิดหน้า
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const data = decodeData();
+        displayEmployee(data);
+      }, 500); // หน่วงเวลาเล็กน้อยเพื่อให้เห็น loading
+    });
+
+    // อัพเดทข้อมูลเมื่อ URL hash เปลี่ยน
+    window.addEventListener('hashchange', () => {
+      const data = decodeData();
+      displayEmployee(data);
+    });
+  </script>
+</body>
+</html>
