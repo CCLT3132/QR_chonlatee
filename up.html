@@ -293,11 +293,12 @@
       <h4>⚡ การลดความซับซ้อน QR Code</h4>
       <p><strong>✅ ทำแล้ว:</strong></p>
       <ul>
-        <li>ใช้ชื่อฟิลด์แบบย่อ (i, n, nn, d, p, dp, ph, e, l, img)</li>
+        <li>ใช้ชื่อฟิลด์ 1 ตัวอักษร (i,n,k,d,p,t,h,e,l,g)</li>
         <li>ลบฟิลด์ว่างออกอัตโนมัติ</li>
+        <li>บีบอัดข้อมูลด้วย base64 สั้น</li>
         <li>Error Level: L (7% - ต่ำสุด)</li>
       </ul>
-      <p style="margin-top:10px"><strong>💡 เพิ่มเติม:</strong> URL รูปภาพควรสั้น ≤ 50 ตัวอักษร (ใช้ bit.ly, i.imgur.com)</p>
+      <p style="margin-top:10px"><strong>💡 เพิ่มเติม:</strong> URL รูปภาพควรสั้น ≤ 40 ตัวอักษร (ใช้ bit.ly, tinyurl)</p>
     </div>
 
     <div class="form-group">
@@ -356,8 +357,8 @@
         URL รูปภาพ
         <span class="char-counter" id="photoCounter">0</span>
       </label>
-      <input type="url" id="photo_url" placeholder="https://i.imgur.com/abc.jpg หรือ https://bit.ly/xyz" oninput="updatePhotoCounter()">
-      <small>💡 แนะนำ: ใช้ URL สั้น (bit.ly, i.imgur.com) หรือ Google Drive</small>
+      <input type="url" id="photo_url" placeholder="https://bit.ly/abc หรือ https://tinyurl.com/xyz" oninput="updatePhotoCounter()">
+      <small>💡 แนะนำ: ใช้ URL สั้นที่สุด (bit.ly ให้ ~20 ตัวอักษร)</small>
     </div>
 
     <button onclick="generateQR()">🎯 สร้าง QR Code</button>
@@ -410,10 +411,10 @@
       if (length === 0) {
         counter.textContent = '0';
         counter.className = 'char-counter';
-      } else if (length <= 50) {
+      } else if (length <= 40) {
         counter.textContent = `${length} ✓`;
         counter.className = 'char-counter ok';
-      } else if (length <= 80) {
+      } else if (length <= 60) {
         counter.textContent = `${length} ⚠️`;
         counter.className = 'char-counter warning';
       } else {
@@ -476,18 +477,18 @@
       // แปลงลิงก์รูปภาพ Google Drive
       const convertedPhotoUrl = convertGoogleDriveLink(photoUrl);
 
-      // สร้างข้อมูลแบบย่อ (ใช้ชื่อฟิลด์สั้นๆ)
+      // สร้างข้อมูลแบบย่อสุดๆ (ใช้ชื่อฟิลด์ 1 ตัวอักษร)
       const data = {
         i: empId,           // id
         n: fullname,        // name
-        nn: nickname,       // nickname
+        k: nickname,        // nickname (k = nick)
         d: startdate,       // date
         p: position,        // position
-        dp: department,     // department
-        ph: phone,          // phone
+        t: department,      // team/department
+        h: phone,           // phone (h = hotline)
         e: email,           // email
         l: lineid,          // line
-        img: convertedPhotoUrl  // image
+        g: convertedPhotoUrl  // image (g = graphic)
       };
 
       // ลบฟิลด์ที่ว่างออก (ลดขนาดข้อมูล)
@@ -495,9 +496,10 @@
         if (!data[key]) delete data[key];
       });
 
-      // เข้ารหัสข้อมูล
+      // เข้ารหัสข้อมูลแบบประหยัดที่สุด
       const jsonData = JSON.stringify(data);
-      const encoded = btoa(encodeURIComponent(jsonData));
+      // ใช้ encodeURIComponent แล้ว base64 (วิธีสั้นที่สุด)
+      const encoded = btoa(encodeURIComponent(jsonData)).replace(/=+$/, ''); // ลบ padding ออก
       const qrUrl = `${hostingUrl}#${encoded}`;
 
       // คำนวณสถิติ
