@@ -293,12 +293,14 @@
       <h4>⚡ การลดความซับซ้อน QR Code</h4>
       <p><strong>✅ ทำแล้ว:</strong></p>
       <ul>
-        <li>ใช้ชื่อฟิลด์ 1 ตัวอักษร (i,n,k,d,p,t,h,e,l,g)</li>
-        <li>ลบฟิลด์ว่างออกอัตโนมัติ</li>
-        <li>บีบอัดข้อมูลด้วย base64 สั้น</li>
+        <li>ใช้ชื่อฟิลด์ 1 ตัวอักษร (i,n,k,p,t,h,e,l,g)</li>
+        <li>ตัดฟิลด์วันที่ออก (ลดขนาด ~10%)</li>
+        <li>ลบฟิลด์ว่างอัตโนมัติ</li>
+        <li>บีบอัด base64 URL-safe</li>
+        <li>ลบ padding (=) ออก</li>
         <li>Error Level: L (7% - ต่ำสุด)</li>
       </ul>
-      <p style="margin-top:10px"><strong>💡 เพิ่มเติม:</strong> URL รูปภาพควรสั้น ≤ 40 ตัวอักษร (ใช้ bit.ly, tinyurl)</p>
+      <p style="margin-top:10px"><strong>💡 เพิ่มเติม:</strong> URL รูปภาพควรสั้น ≤ 40 ตัวอักษร (ใช้ bit.ly)</p>
     </div>
 
     <div class="form-group">
@@ -320,11 +322,6 @@
     <div class="form-group">
       <label>ชื่อเล่น</label>
       <input type="text" id="nickname" placeholder="ชาย" maxlength="20">
-    </div>
-
-    <div class="form-group">
-      <label>วันที่เข้างาน</label>
-      <input type="date" id="startdate">
     </div>
 
     <div class="form-group">
@@ -456,7 +453,6 @@
       const empId = document.getElementById("emp_id").value.trim();
       const fullname = document.getElementById("fullname").value.trim();
       const nickname = document.getElementById("nickname").value.trim();
-      const startdate = document.getElementById("startdate").value;
       const position = document.getElementById("position").value.trim();
       const department = document.getElementById("department").value.trim();
       const phone = document.getElementById("phone").value.trim();
@@ -477,29 +473,31 @@
       // แปลงลิงก์รูปภาพ Google Drive
       const convertedPhotoUrl = convertGoogleDriveLink(photoUrl);
 
-      // สร้างข้อมูลแบบย่อสุดๆ (ใช้ชื่อฟิลด์ 1 ตัวอักษร)
-      const data = {
-        i: empId,           // id
-        n: fullname,        // name
-        k: nickname,        // nickname (k = nick)
-        d: startdate,       // date
-        p: position,        // position
-        t: department,      // team/department
-        h: phone,           // phone (h = hotline)
-        e: email,           // email
-        l: lineid,          // line
-        g: convertedPhotoUrl  // image (g = graphic)
-      };
+      // สร้างข้อมูลแบบย่อสุดๆ (ใช้ชื่อฟิลด์ 1 ตัวอักษร) - เรียงตามความสำคัญ
+      const data = {};
+      
+      // ข้อมูลบังคับ
+      if (empId) data.i = empId;
+      if (fullname) data.n = fullname;
+      
+      // ข้อมูลเสริม (เรียงตามความสำคัญ)
+      if (nickname) data.k = nickname;
+      if (position) data.p = position;
+      if (department) data.t = department;
+      if (phone) data.h = phone;
+      if (email) data.e = email;
+      if (lineid) data.l = lineid;
+      if (convertedPhotoUrl) data.g = convertedPhotoUrl;
 
-      // ลบฟิลด์ที่ว่างออก (ลดขนาดข้อมูล)
-      Object.keys(data).forEach(key => {
-        if (!data[key]) delete data[key];
-      });
-
-      // เข้ารหัสข้อมูลแบบประหยัดที่สุด
+      // เข้ารหัสข้อมูลแบบประหยัดที่สุด (ใช้ JSON สั้นที่สุด)
       const jsonData = JSON.stringify(data);
-      // ใช้ encodeURIComponent แล้ว base64 (วิธีสั้นที่สุด)
-      const encoded = btoa(encodeURIComponent(jsonData)).replace(/=+$/, ''); // ลบ padding ออก
+      
+      // ใช้ base64 แล้วลบ padding และ URL-unsafe chars
+      let encoded = btoa(unescape(encodeURIComponent(jsonData)))
+        .replace(/=+$/, '')        // ลบ padding
+        .replace(/\+/g, '-')       // แทน + ด้วย -
+        .replace(/\//g, '_');      // แทน / ด้วย _
+      
       const qrUrl = `${hostingUrl}#${encoded}`;
 
       // คำนวณสถิติ
@@ -509,17 +507,17 @@
       // คำนวณความซับซ้อน (0-100%)
       let complexity = 0;
       let complexityText = '';
-      if (urlSize <= 150) {
-        complexity = 25;
+      if (urlSize <= 120) {
+        complexity = 20;
         complexityText = 'ต่ำมาก 🟢';
-      } else if (urlSize <= 250) {
-        complexity = 40;
+      } else if (urlSize <= 200) {
+        complexity = 35;
         complexityText = 'ต่ำ 🟢';
-      } else if (urlSize <= 350) {
-        complexity = 60;
+      } else if (urlSize <= 300) {
+        complexity = 55;
         complexityText = 'ปานกลาง 🟡';
-      } else if (urlSize <= 450) {
-        complexity = 80;
+      } else if (urlSize <= 400) {
+        complexity = 75;
         complexityText = 'สูง 🟠';
       } else {
         complexity = 100;
