@@ -66,6 +66,11 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
+    }
+    
+    .photo-container img.error {
+      display: none;
     }
     
     .photo-placeholder {
@@ -288,9 +293,10 @@
       // สร้าง HTML สำหรับแสดงข้อมูล
       let html = `
         <div class="card-header">
-          <div class="photo-container">
+          <div class="photo-container" id="photoContainer">
             ${data.g ? 
-              `<img src="${data.g}" alt="รูปภาพ" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'>👤</div>'">` : 
+              `<img src="${data.g}" alt="รูปภาพ" onload="this.style.display='block'" onerror="handleImageError(this)">
+               <div class="photo-placeholder" style="display:none">👤</div>` : 
               '<div class="photo-placeholder">👤</div>'
             }
           </div>
@@ -366,7 +372,8 @@
       }
       
       if (data.l) {
-        const lineId = data.l.replace('@', '');
+        // ถ้ามี @ ให้เอาออก, ถ้าไม่มีก็ใช้เลย
+        const lineId = data.l.startsWith('@') ? data.l.substring(1) : data.l;
         html += `
           <a href="https://line.me/ti/p/~${lineId}" target="_blank" class="btn btn-line">
             <span>💚</span>
@@ -378,6 +385,17 @@
       html += '</div></div>';
 
       document.getElementById('content').innerHTML = html;
+    }
+
+    function handleImageError(img) {
+      // ซ่อนรูปที่โหลดไม่ได้
+      img.style.display = 'none';
+      // แสดง placeholder แทน
+      const container = img.parentElement;
+      const placeholder = container.querySelector('.photo-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
     }
 
     function formatPhone(phone) {
