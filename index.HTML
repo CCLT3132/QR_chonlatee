@@ -255,11 +255,6 @@
     </div>
 
     <div class="form-group">
-      <label>วันที่เข้างาน</label>
-      <input type="date" id="startdate">
-    </div>
-
-    <div class="form-group">
       <label>ตำแหน่งงาน</label>
       <input type="text" id="position" placeholder="พนักงานขาย">
     </div>
@@ -272,11 +267,6 @@
     <div class="form-group">
       <label>เบอร์โทรศัพท์</label>
       <input type="tel" id="phone" placeholder="081-234-5678">
-    </div>
-
-    <div class="form-group">
-      <label>อีเมล</label>
-      <input type="email" id="email" placeholder="example@company.com">
     </div>
 
     <div class="form-group">
@@ -312,28 +302,23 @@
     function convertGoogleDriveLink(url) {
       if (!url) return '';
       
-      // ตรวจสอบว่าเป็นลิงก์ Google Drive หรือไม่
       if (url.includes('drive.google.com')) {
-        // แบบที่ 1: https://drive.google.com/file/d/FILE_ID/view
         let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
         }
         
-        // แบบที่ 2: https://drive.google.com/open?id=FILE_ID
         match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
         }
         
-        // แบบที่ 3: มีแต่ FILE_ID
         match = url.match(/([a-zA-Z0-9_-]{25,})/);
         if (match) {
           return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w200`;
         }
       }
       
-      // ถ้าไม่ใช่ Google Drive ให้ใช้ URL เดิม
       return url;
     }
 
@@ -342,11 +327,9 @@
       const empId = document.getElementById("emp_id").value.trim();
       const fullname = document.getElementById("fullname").value.trim();
       const nickname = document.getElementById("nickname").value.trim();
-      const startdate = document.getElementById("startdate").value;
       const position = document.getElementById("position").value.trim();
       const department = document.getElementById("department").value.trim();
       const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
       const lineid = document.getElementById("lineid").value.trim();
       const photoUrl = document.getElementById("photo_url").value.trim();
 
@@ -360,32 +343,25 @@
         return;
       }
 
-      // แปลงลิงก์รูปภาพ Google Drive
       const convertedPhotoUrl = convertGoogleDriveLink(photoUrl);
 
-      // สร้างข้อมูลแบบย่อ
       const data = {
         i: empId,
         n: fullname,
         nn: nickname,
-        d: startdate,
         p: position,
         dp: department,
         ph: phone,
-        e: email,
         l: lineid,
         img: convertedPhotoUrl
       };
 
-      // เข้ารหัสข้อมูล
       const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
       const qrUrl = `${hostingUrl}#${encoded}`;
 
-      // แสดงลิงก์ทดสอบ
       document.getElementById("testLink").href = qrUrl;
       document.getElementById("testLink").textContent = qrUrl;
 
-      // สร้าง QR Code
       const qrcodeDiv = document.getElementById("qrcode");
       qrcodeDiv.innerHTML = "";
       
