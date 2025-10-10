@@ -325,7 +325,6 @@
           contactLinksHTML += `<a href="mailto:${data.e}" class="contact-btn btn-email">✉️ อีเมล</a>`;
         }
         if (data.l) {
-          const lineId = data.l.replace('@', '');
           contactLinksHTML += `<a href="https://line.me/ti/p/~${lineId}" class="contact-btn btn-line" target="_blank">LINE</a>`;
         }
         contactLinksHTML += '</div>';
