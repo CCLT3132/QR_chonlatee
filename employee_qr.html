@@ -285,13 +285,13 @@
           const phoneClean = data.ph.replace(/[^0-9]/g, '');
           contactLinksHTML += `<a href="tel:${phoneClean}" class="contact-btn btn-phone">📞 โทร</a>`;
         }
-        if (data.l) {
-          let lineId = data.l.trim();
-          if (lineId.startsWith('@')) {
-            lineId = lineId.substring(1);
-          }
-          contactLinksHTML += `<a href="https://line.me/ti/p/~${lineId}" class="contact-btn btn-line" target="_blank">💬 LINE</a>`;
-        }
+      if (data.l) {
+        let lineId = data.l.trim();
+        if (lineId.startsWith('@')) {
+          lineId = lineId.substring(1);
+         }
+        contactLinksHTML += `<a href="https://line.me/ti/p/~${lineId}" class="contact-btn btn-line" target="_blank">💬 LINE</a>`;
+      }
         contactLinksHTML += '</div>';
       }
 
