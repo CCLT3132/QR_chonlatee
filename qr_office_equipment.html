@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการ QR Code อุปกรณ์</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .header p {
+            color: #bfdbfe;
+            font-size: 14px;
+        }
+
+        .icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .form-label .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #bfdbfe;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .image-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #9ca3af 100%);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #2563eb;
+        }
+
+        .qr-result {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            border: 2px solid #bfdbfe;
+            text-align: center;
+        }
+
+        .qr-result h3 {
+            color: #1e40af;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .qr-info {
+            color: #64748b;
+            font-size: 14px;
+            max-width: 500px;
+            margin: 15px auto 0;
+        }
+
+        .view-mode .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-item-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .info-item-value {
+            font-size: 18px;
+            color: #1f2937;
+            padding-left: 28px;
+        }
+
+        .images-section {
+            margin-top: 30px;
+        }
+
+        .images-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .image-item {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #bfdbfe;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .image-item:hover {
+            border-color: #3b82f6;
+            transform: scale(1.05);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .image-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .images-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div id="formMode">
+                <div class="header">
+                    <div class="header-content">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                        </svg>
+                        <h1>สร้าง QR Code อุปกรณ์</h1>
+                    </div>
+                    <p>กรอกข้อมูลเพื่อสร้าง QR Code สำหรับอุปกรณ์</p>
+                </div>
+
+                <div class="content">
+                    <form id="deviceForm">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                </svg>
+                                รหัสอุปกรณ์ *
+                            </label>
+                            <input type="text" id="deviceId" class="form-input" placeholder="เช่น DEV-001" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                ชื่ออุปกรณ์ *
+                            </label>
+                            <input type="text" id="deviceName" class="form-input" placeholder="เช่น เครื่องพิมพ์ HP LaserJet" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Location *
+                            </label>
+                            <input type="text" id="location" class="form-input" placeholder="เช่น อาคาร A ชั้น 3 ห้อง 301" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                หมายเหตุ
+                            </label>
+                            <textarea id="note" class="form-textarea" placeholder="ข้อมูลเพิ่มเติม..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                รูปภาพ (URL) 
+                            </label>
+                            <div class="image-inputs">
+                                <input type="url" id="image1" class="form-input" placeholder="URL รูปที่ 1">
+                                <input type="url" id="image2" class="form-input" placeholder="URL รูปที่ 2">
+                                <input type="url" id="image3" class="form-input" placeholder="URL รูปที่ 3">
+                                <input type="url" id="image4" class="form-input" placeholder="URL รูปที่ 4">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="generateBtn">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                            </svg>
+                            สร้าง QR Code
+                        </button>
+                    </form>
+
+                    <div id="qrResult" class="qr-result hidden">
+                        <h3>QR Code ของคุณ</h3>
+                        <div id="qrcode"></div>
+                        <button class="btn-secondary" id="downloadBtn">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            ดาวน์โหลด QR Code
+                        </button>
+                        <p class="qr-info">สแกน QR Code นี้เพื่อดูข้อมูลอุปกรณ์</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="viewMode" class="hidden view-mode">
+                <div class="header">
+                    <div class="header-content">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <h1>ข้อมูลอุปกรณ์</h1>
+                    </div>
+                    <p>สแกนสำเร็จ</p>
+                </div>
+
+                <div class="content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-item-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                </svg>
+                                รหัสอุปกรณ์
+                            </div>
+                            <div class="info-item-value" id="viewDeviceId">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-item-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                ชื่ออุปกรณ์
+                            </div>
+                            <div class="info-item-value" id="viewDeviceName">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-item-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Location
+                            </div>
+                            <div class="info-item-value" id="viewLocation">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-item-label">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                หมายเหตุ
+                            </div>
+                            <div class="info-item-value" id="viewNote">-</div>
+                        </div>
+                    </div>
+
+                    <div id="imagesSection" class="images-section hidden">
+                        <div class="images-section-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            รูปภาพ
+                        </div>
+                        <div class="images-grid" id="viewImages"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var qrCodeInstance = null;
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var data = urlParams.get('data');
+
+        if (data) {
+            try {
+                var decoded = JSON.parse(atob(data));
+                showViewMode(decoded);
+            } catch (e) {
+                console.error('Invalid QR data');
+            }
+        }
+
+        document.getElementById('deviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateQRCode();
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            downloadQRCode();
+        });
+
+        function generateQRCode() {
+            var deviceId = document.getElementById('deviceId').value;
+            var deviceName = document.getElementById('deviceName').value;
+            var location = document.getElementById('location').value;
+            var note = document.getElementById('note').value;
+            
+            var images = [
+                document.getElementById('image1').value,
+                document.getElementById('image2').value,
+                document.getElementById('image3').value,
+                document.getElementById('image4').value
+            ].filter(function(img) { return img.trim() !== ''; });
+
+            var dataToEncode = {
+                deviceId: deviceId,
+                deviceName: deviceName,
+                location: location,
+                note: note,
+                images: images
+            };
+
+            var encoded = btoa(JSON.stringify(dataToEncode));
+            var url = window.location.origin + window.location.pathname + '?data=' + encoded;
+
+            var qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+
+            qrCodeInstance = new QRCode(qrcodeDiv, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: "#1e40af",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('qrResult').classList.remove('hidden');
+            
+            setTimeout(function() {
+                document.getElementById('qrResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function downloadQRCode() {
+            var canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                var link = document.createElement('a');
+                var deviceId = document.getElementById('deviceId').value || 'device';
+                link.download = 'QR_' + deviceId + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        }
+
+        function showViewMode(data) {
+            document.getElementById('formMode').classList.add('hidden');
+            document.getElementById('viewMode').classList.remove('hidden');
+
+            document.getElementById('viewDeviceId').textContent = data.deviceId || '-';
+            document.getElementById('viewDeviceName').textContent = data.deviceName || '-';
+            document.getElementById('viewLocation').textContent = data.location || '-';
+            document.getElementById('viewNote').textContent = data.note || '-';
+
+            if (data.images && data.images.length > 0) {
+                var imagesGrid = document.getElementById('viewImages');
+                imagesGrid.innerHTML = '';
+                
+                data.images.forEach(function(img, idx) {
+                    var imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.innerHTML = '<img src="' + img + '" alt="รูปที่ ' + (idx + 1) + '" onerror="this.parentElement.style.display=\'none\'">';
+                    imageItem.addEventListener('click', function() {
+                        window.open(img, '_blank');
+                    });
+                    imagesGrid.appendChild(imageItem);
+                });
+
+                document.getElementById('imagesSection').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
