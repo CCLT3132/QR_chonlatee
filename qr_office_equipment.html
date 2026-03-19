@@ -1,543 +1,456 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการ QR Code อุปกรณ์</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
-        }
-
-        .content {
-            padding: 40px 30px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 15px;
-        }
-
-        .form-input,
-        .form-textarea {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .image-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .qr-section {
-            margin-top: 40px;
-            padding: 30px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 20px;
-            text-align: center;
-            display: none;
-        }
-
-        .qr-section.show {
-            display: block;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .qr-section h3 {
-            color: #667eea;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .qr-container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .qr-container img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .btn-download {
-            background: #4caf50;
-            color: white;
-            padding: 14px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px 5px;
-        }
-
-        .btn-download:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .btn-new {
-            background: #2196F3;
-            color: white;
-            padding: 14px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px 5px;
-        }
-
-        .btn-new:hover {
-            background: #0b7dda;
-            transform: translateY(-2px);
-        }
-
-        /* View Mode Styles */
-        .view-card {
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        .view-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .view-header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .view-header .device-id {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-
-        .view-content {
-            padding: 40px 30px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-box {
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 15px;
-            transition: all 0.3s;
-        }
-
-        .info-box:hover {
-            background: #e3f2fd;
-            transform: translateY(-3px);
-        }
-
-        .info-box-label {
-            color: #667eea;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .info-box-value {
-            color: #333;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .images-section {
-            margin-top: 40px;
-        }
-
-        .images-section h3 {
-            color: #667eea;
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .image-box {
-            aspect-ratio: 1;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .image-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .image-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                padding: 30px 20px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .images-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจัดการ QR Code อุปกรณ์</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 25px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideIn 0.5s ease-out;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .card-header h1 {
+      color: white;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .card-header p {
+      color: rgba(255,255,255,0.9);
+      font-size: 16px;
+    }
+    .card-body {
+      padding: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      color: #667eea;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #f8f9fa;
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .image-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    .qr-section {
+      margin-top: 30px;
+      padding: 25px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .qr-section h3 {
+      color: #667eea;
+      font-size: 18px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .qr-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+    }
+    .qr-container img {
+      display: block;
+      width: 256px;
+      height: 256px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .btn-secondary {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      transition: transform 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: white;
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+    }
+    .btn-download {
+      background: #4caf50;
+    }
+    .btn-new {
+      background: #2196F3;
+    }
+    
+    /* View Mode */
+    .info-section {
+      margin-bottom: 25px;
+    }
+    .info-section h3 {
+      color: #667eea;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      transition: transform 0.2s;
+    }
+    .info-item:hover {
+      transform: translateX(5px);
+      background: #e3f2fd;
+    }
+    .info-icon {
+      font-size: 20px;
+      margin-right: 12px;
+      min-width: 30px;
+      text-align: center;
+    }
+    .info-content {
+      flex: 1;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 3px;
+    }
+    .info-value {
+      font-size: 16px;
+      color: #333;
+      font-weight: 600;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .device-id-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .image-item {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .image-item:hover {
+      transform: scale(1.05);
+    }
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    @media (max-width: 768px) {
+      .card-header h1 {
+        font-size: 24px;
+      }
+      .images-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Form Mode -->
-        <div id="formMode" class="card">
-            <div class="header">
-                <h1>📦 สร้าง QR Code อุปกรณ์</h1>
-                <p>กรอกข้อมูลอุปกรณ์เพื่อสร้าง QR Code</p>
-            </div>
-
-            <div class="content">
-                <form id="deviceForm">
-                    <div class="form-group">
-                        <label class="form-label">🔖 รหัสอุปกรณ์ *</label>
-                        <input type="text" id="deviceId" class="form-input" placeholder="เช่น DEV-001" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📦 ชื่ออุปกรณ์ *</label>
-                        <input type="text" id="deviceName" class="form-input" placeholder="เช่น เครื่องพิมพ์ HP LaserJet Pro" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📍 สถานที่ตั้ง *</label>
-                        <input type="text" id="location" class="form-input" placeholder="เช่น อาคาร A ชั้น 3 ห้อง 301" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📝 หมายเหตุ</label>
-                        <textarea id="note" class="form-textarea" placeholder="ข้อมูลเพิ่มเติมเกี่ยวกับอุปกรณ์..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">🖼️ รูปภาพ (URL) - ใส่ 3-4 รูป</label>
-                        <div class="image-inputs">
-                            <input type="url" id="image1" class="form-input" placeholder="https://example.com/image1.jpg">
-                            <input type="url" id="image2" class="form-input" placeholder="https://example.com/image2.jpg">
-                            <input type="url" id="image3" class="form-input" placeholder="https://example.com/image3.jpg">
-                            <input type="url" id="image4" class="form-input" placeholder="https://example.com/image4.jpg">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary">
-                        ✨ สร้าง QR Code
-                    </button>
-                </form>
-
-                <div id="qrSection" class="qr-section">
-                    <h3>🎉 QR Code ของคุณพร้อมแล้ว!</h3>
-                    <div class="qr-container">
-                        <img id="qrImage" src="" alt="QR Code">
-                    </div>
-                    <div>
-                        <button id="downloadBtn" class="btn-download">💾 ดาวน์โหลด QR Code</button>
-                        <button id="newQrBtn" class="btn-new">🔄 สร้างใหม่</button>
-                    </div>
-                    <p style="color: #666; margin-top: 15px;">สแกน QR Code นี้เพื่อดูข้อมูลอุปกรณ์</p>
-                </div>
-            </div>
+  <div class="container">
+    <!-- Form Mode -->
+    <div class="card" id="formMode">
+      <div class="card-header">
+        <h1>📦 สร้าง QR Code อุปกรณ์</h1>
+        <p>กรอกข้อมูลเพื่อสร้าง QR Code</p>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">🔖 รหัสอุปกรณ์</label>
+          <input type="text" id="deviceId" class="form-input" placeholder="เช่น DEV-001">
         </div>
 
-        <!-- View Mode -->
-        <div id="viewMode" class="view-card hidden">
-            <div class="view-header">
-                <h1 id="viewDeviceName">-</h1>
-                <div class="device-id" id="viewDeviceId">-</div>
-            </div>
-
-            <div class="view-content">
-                <div class="info-grid">
-                    <div class="info-box">
-                        <div class="info-box-label">📍 สถานที่ตั้ง</div>
-                        <div class="info-box-value" id="viewLocation">-</div>
-                    </div>
-
-                    <div class="info-box">
-                        <div class="info-box-label">📝 หมายเหตุ</div>
-                        <div class="info-box-value" id="viewNote">-</div>
-                    </div>
-                </div>
-
-                <div id="imagesSection" class="images-section hidden">
-                    <h3>🖼️ รูปภาพอุปกรณ์</h3>
-                    <div class="images-grid" id="viewImages"></div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label class="form-label">📦 ชื่ออุปกรณ์</label>
+          <input type="text" id="deviceName" class="form-input" placeholder="เช่น เครื่องพิมพ์ HP LaserJet">
         </div>
+
+        <div class="form-group">
+          <label class="form-label">📍 สถานที่ตั้ง</label>
+          <input type="text" id="location" class="form-input" placeholder="เช่น อาคาร A ชั้น 3 ห้อง 301">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">📝 หมายเหตุ</label>
+          <textarea id="note" class="form-textarea" placeholder="ข้อมูลเพิ่มเติม..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">🖼️ รูปภาพ (URL)</label>
+          <div class="image-inputs">
+            <input type="url" id="image1" class="form-input" placeholder="URL รูปที่ 1">
+            <input type="url" id="image2" class="form-input" placeholder="URL รูปที่ 2">
+            <input type="url" id="image3" class="form-input" placeholder="URL รูปที่ 3">
+            <input type="url" id="image4" class="form-input" placeholder="URL รูปที่ 4">
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="createQR()">✨ สร้าง QR Code</button>
+
+        <div id="qrSection" class="qr-section" style="display:none;">
+          <h3>🎉 QR Code พร้อมใช้งาน</h3>
+          <div class="qr-container">
+            <img id="qrImage" src="" alt="QR Code">
+          </div>
+          <div class="button-group">
+            <button class="btn-secondary btn-download" onclick="downloadQR()">💾 ดาวน์โหลด</button>
+            <button class="btn-secondary btn-new" onclick="newQR()">🔄 สร้างใหม่</button>
+          </div>
+          <p style="color: #666; margin-top: 10px; font-size: 14px;">สแกน QR Code เพื่อดูข้อมูล</p>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // ตรวจสอบว่ามี URL parameter หรือไม่
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
+    <!-- View Mode -->
+    <div class="card" id="viewMode" style="display:none;">
+      <div class="card-header">
+        <h1 id="viewDeviceName">-</h1>
+        <div class="device-id-badge">🔖 <span id="viewDeviceId">-</span></div>
+      </div>
+      <div class="card-body" id="viewContent"></div>
+    </div>
+  </div>
 
-        if (encodedData) {
-            // แสดงโหมดดูข้อมูล
-            try {
-                const decodedData = JSON.parse(atob(encodedData));
-                showViewMode(decodedData);
-            } catch (error) {
-                console.error('Error decoding data:', error);
-            }
+  <script>
+    // ตรวจสอบ URL เมื่อโหลดหน้า
+    window.onload = function() {
+      var params = new URLSearchParams(window.location.search);
+      var data = params.get('data');
+      
+      if (data) {
+        try {
+          var decoded = JSON.parse(atob(data));
+          showView(decoded);
+        } catch (e) {
+          console.log('Error:', e);
         }
+      }
+    };
 
-        // จัดการ Form Submit
-        document.getElementById('deviceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const deviceId = document.getElementById('deviceId').value.trim();
-            const deviceName = document.getElementById('deviceName').value.trim();
-            const location = document.getElementById('location').value.trim();
-            const note = document.getElementById('note').value.trim();
-            
-            const images = [
-                document.getElementById('image1').value.trim(),
-                document.getElementById('image2').value.trim(),
-                document.getElementById('image3').value.trim(),
-                document.getElementById('image4').value.trim()
-            ].filter(img => img !== '');
+    // สร้าง QR Code
+    function createQR() {
+      var deviceId = document.getElementById('deviceId').value.trim();
+      var deviceName = document.getElementById('deviceName').value.trim();
+      var location = document.getElementById('location').value.trim();
+      var note = document.getElementById('note').value.trim();
+      
+      if (!deviceId || !deviceName || !location) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+        return;
+      }
+      
+      var images = [];
+      var img1 = document.getElementById('image1').value.trim();
+      var img2 = document.getElementById('image2').value.trim();
+      var img3 = document.getElementById('image3').value.trim();
+      var img4 = document.getElementById('image4').value.trim();
+      
+      if (img1) images.push(img1);
+      if (img2) images.push(img2);
+      if (img3) images.push(img3);
+      if (img4) images.push(img4);
 
-            const data = {
-                deviceId: deviceId,
-                deviceName: deviceName,
-                location: location,
-                note: note,
-                images: images
-            };
+      var data = {
+        deviceId: deviceId,
+        deviceName: deviceName,
+        location: location,
+        note: note,
+        images: images
+      };
 
-            generateQRCode(data);
-        });
+      var json = JSON.stringify(data);
+      var encoded = btoa(json);
+      var url = window.location.origin + window.location.pathname + '?data=' + encoded;
+      var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=' + encodeURIComponent(url);
+      
+      document.getElementById('qrImage').src = qrUrl;
+      document.getElementById('qrSection').style.display = 'block';
+      
+      setTimeout(function() {
+        var section = document.getElementById('qrSection');
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
 
-        // ฟังก์ชันสร้าง QR Code
-        function generateQRCode(data) {
-            const encodedData = btoa(JSON.stringify(data));
-            const fullUrl = window.location.origin + window.location.pathname + '?data=' + encodedData;
-            
-            // สร้าง QR Code URL
-            const qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(fullUrl);
-            
-            // แสดง QR Code
-            const qrImage = document.getElementById('qrImage');
-            qrImage.src = qrApiUrl;
-            
-            // แสดง QR Section
-            document.getElementById('qrSection').classList.add('show');
-            
-            // Scroll ไปที่ QR Code
-            setTimeout(function() {
-                document.getElementById('qrSection').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            }, 100);
+    // ดาวน์โหลด QR
+    function downloadQR() {
+      var img = document.getElementById('qrImage');
+      var deviceId = document.getElementById('deviceId').value.trim() || 'device';
+      var a = document.createElement('a');
+      a.href = img.src;
+      a.download = 'QR_' + deviceId + '.png';
+      a.click();
+    }
+
+    // สร้างใหม่
+    function newQR() {
+      document.getElementById('deviceId').value = '';
+      document.getElementById('deviceName').value = '';
+      document.getElementById('location').value = '';
+      document.getElementById('note').value = '';
+      document.getElementById('image1').value = '';
+      document.getElementById('image2').value = '';
+      document.getElementById('image3').value = '';
+      document.getElementById('image4').value = '';
+      document.getElementById('qrSection').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // แสดงโหมดดู
+    function showView(data) {
+      document.getElementById('formMode').style.display = 'none';
+      document.getElementById('viewMode').style.display = 'block';
+      
+      document.getElementById('viewDeviceName').textContent = data.deviceName || '-';
+      document.getElementById('viewDeviceId').textContent = data.deviceId || '-';
+
+      var html = '';
+      
+      if (data.location || data.note) {
+        html += '<div class="info-section"><h3>📋 ข้อมูลอุปกรณ์</h3>';
+        
+        if (data.location) {
+          html += '<div class="info-item">';
+          html += '<div class="info-icon">📍</div>';
+          html += '<div class="info-content">';
+          html += '<div class="info-label">สถานที่ตั้ง</div>';
+          html += '<div class="info-value">' + data.location + '</div>';
+          html += '</div></div>';
         }
-
-        // ดาวน์โหลด QR Code
-        document.getElementById('downloadBtn').addEventListener('click', function() {
-            const qrImage = document.getElementById('qrImage');
-            const deviceId = document.getElementById('deviceId').value.trim() || 'device';
-            
-            // สร้าง link สำหรับดาวน์โหลด
-            const link = document.createElement('a');
-            link.href = qrImage.src;
-            link.download = 'QR_' + deviceId + '.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-        // สร้าง QR Code ใหม่
-        document.getElementById('newQrBtn').addEventListener('click', function() {
-            document.getElementById('deviceForm').reset();
-            document.getElementById('qrSection').classList.remove('show');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // แสดงโหมดดูข้อมูล
-        function showViewMode(data) {
-            document.getElementById('formMode').classList.add('hidden');
-            document.getElementById('viewMode').classList.remove('hidden');
-
-            document.getElementById('viewDeviceName').textContent = data.deviceName || '-';
-            document.getElementById('viewDeviceId').textContent = '🔖 ' + (data.deviceId || '-');
-            document.getElementById('viewLocation').textContent = data.location || '-';
-            document.getElementById('viewNote').textContent = data.note || 'ไม่มีหมายเหตุ';
-
-            // แสดงรูปภาพ
-            if (data.images && data.images.length > 0) {
-                const imagesGrid = document.getElementById('viewImages');
-                imagesGrid.innerHTML = '';
-                
-                data.images.forEach(function(imgUrl, index) {
-                    const imageBox = document.createElement('div');
-                    imageBox.className = 'image-box';
-                    imageBox.innerHTML = '<img src="' + imgUrl + '" alt="รูปที่ ' + (index + 1) + '" onerror="this.parentElement.style.display=\'none\'">';
-                    imageBox.addEventListener('click', function() {
-                        window.open(imgUrl, '_blank');
-                    });
-                    imagesGrid.appendChild(imageBox);
-                });
-
-                document.getElementById('imagesSection').classList.remove('hidden');
-            }
+        
+        if (data.note) {
+          html += '<div class="info-item">';
+          html += '<div class="info-icon">📝</div>';
+          html += '<div class="info-content">';
+          html += '<div class="info-label">หมายเหตุ</div>';
+          html += '<div class="info-value">' + data.note + '</div>';
+          html += '</div></div>';
         }
-    </script>
+        
+        html += '</div>';
+      }
+      
+      if (data.images && data.images.length > 0) {
+        html += '<div class="info-section"><h3>🖼️ รูปภาพอุปกรณ์</h3>';
+        html += '<div class="images-grid">';
+        
+        for (var i = 0; i < data.images.length; i++) {
+          html += '<div class="image-item" onclick="window.open(\'' + data.images[i] + '\', \'_blank\')">';
+          html += '<img src="' + data.images[i] + '" alt="รูปที่ ' + (i + 1) + '">';
+          html += '</div>';
+        }
+        
+        html += '</div></div>';
+      }
+
+      document.getElementById('viewContent').innerHTML = html;
+    }
+  </script>
 </body>
 </html>
